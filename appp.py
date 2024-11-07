@@ -1,24 +1,45 @@
+import os
+
 import easyocr
 import cv2
 import numpy as np
+import requests
 from PIL import Image
-import os
-
-# مسار الصورة (تأكد من تحديثه إلى المسار الصحيح)
-path = r"C:\UsingTempImageDonnotDELETE\image.png"  # استخدم المسار الكامل للصورة مع اسم الملف
+from io import BytesIO
+import re
 
 # تهيئة قارئ EasyOCR لدعم اللغتين العربية والإنجليزية
 reader = easyocr.Reader(['en', 'ar'])
 
+# تحديد مسار الصورة (رابط URL أو مسار محلي)
+path = "https://support.content.office.net/en-us/media/f6bd775e-0af4-4840-b9c5-de4ef1cd5aa3.png"
 
-# تحميل الصورة من مسار الملف
+
+# تحميل الصورة من رابط URL أو مسار محلي
 def load_image(path):
-    image = Image.open(path)
-    return np.array(image)
+    if re.match(r'^https?://', path):  # التحقق إذا كان المسار URL
+        response = requests.get(path)
+        if response.status_code == 200:
+            image = Image.open(BytesIO(response.content))
+            return np.array(image)
+        else:
+            print("فشل في تحميل الصورة من الرابط.")
+            return None
+    else:
+        if not os.path.exists(path):
+            print("الصورة غير موجودة في المسار المحدد.")
+            return None
+        else:
+            image = Image.open(path)
+            return np.array(image)
 
 
 # معالجة الصورة واستخراج النصوص
 def extract_text_from_image(image):
+    if image is None:
+        print("الصورة غير متوفرة للمعالجة.")
+        return []
+
     # التحقق من عدد القنوات في الصورة وتحويلها إذا لزم الأمر
     if len(image.shape) == 3 and image.shape[2] == 3:  # صورة RGB
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -43,9 +64,7 @@ def extract_text_from_image(image):
     return extracted_texts
 
 
-# تحقق من وجود الصورة
-if not os.path.exists(path):
-    print("الصورة غير موجودة في المسار المحدد.")
-else:
-    image = load_image(path)
+# تحميل ومعالجة الصورة واستخراج النصوص
+image = load_image(path)
+if image is not None:
     texts = extract_text_from_image(image)
