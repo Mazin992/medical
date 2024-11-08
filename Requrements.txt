@@ -1,4 +1,11 @@
+streamlit
+
 easyocr
+torch
+torchvision
+torchaudio
+Pillow
+
 cv2
 numpy
 requests
