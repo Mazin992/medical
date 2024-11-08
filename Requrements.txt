@@ -1,5 +1,9 @@
 easyocr
 cv2
-numpy 
+numpy
+requests
 PIL
- os
+Image
+os
+BytesIO
+re
