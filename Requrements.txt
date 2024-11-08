@@ -1,9 +1,9 @@
 streamlit
 
 easyocr
-torch
-torchvision
-torchaudio
+torch==1.10.0+cpu
+torchvision==0.11.1+cpu
+torchaudio==0.10.0+cpu
 Pillow
 
 cv2
