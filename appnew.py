@@ -1,21 +1,23 @@
 import streamlit as st
 from PIL import Image
+import pytesseract
 import numpy as np
 
+st.title("Medical Image Text Reader")
+st.write("Upload a medical image to extract text.")
 
-# إعداد واجهة Streamlit
-st.title("قارئ الصور الطبية")
-st.write("قم برفع صورة للنتائج الطبية لقراءتها.")
+# Upload the image
+uploaded_image = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
 
-# تحميل الصورة من المستخدم
-uploaded_image = st.file_uploader("اختر صورة", type=["jpg", "jpeg", "png"])
-
-# التحقق من تحميل الصورة
 if uploaded_image is not None:
-    # عرض الصورة
     image = Image.open(uploaded_image)
-    st.image(image, caption="الصورة الطبية", use_column_width=True)
+    st.image(image, caption="Uploaded Image", use_column_width=True)
 
-
-    # تحويل الصورة إلى صيغة مناسبة لـ EasyOCR
+    # Convert image to text
+    st.write("Extracting text from the image...")
     image_np = np.array(image)
+    extracted_text = pytesseract.image_to_string(image_np, lang="eng+ara")
+
+    # Display extracted text
+    st.write("Extracted Text:")
+    st.text(extracted_text)
